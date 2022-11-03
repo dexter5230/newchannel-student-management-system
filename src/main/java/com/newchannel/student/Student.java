@@ -26,6 +26,10 @@ public class Student {
     @Column (name = "email", nullable = false, unique = true)
     @Email
     private String email;
+    @OneToOne (mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private StudentCard studentCard;
+    @OneToOne (mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private StudentAccount studentAccount;
 
     public Student() {
     }
@@ -93,6 +97,16 @@ public class Student {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void addStudentCard(StudentCard studentCard) {
+        this.studentCard = studentCard;
+        studentCard.setStudent(this);
+    }
+
+    public void addStudentAccount(StudentAccount studentAccount) {
+        this.studentAccount = studentAccount;
+        studentAccount.setStudent(this);
     }
 
     @Override

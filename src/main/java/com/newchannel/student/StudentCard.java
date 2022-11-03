@@ -13,6 +13,10 @@ public class StudentCard {
     @Column (name = "student_card_number", nullable = false, updatable = false)
     private Long studentCardNumber;
 
+    @OneToOne (cascade = CascadeType.ALL)
+    @JoinColumn (name = "student_id", referencedColumnName = "student_id")
+    private Student student;
+
     public StudentCard(Long studentCardId, Long studentCardNumber) {
         this.studentCardId = studentCardId;
         this.studentCardNumber = studentCardNumber;
@@ -39,5 +43,13 @@ public class StudentCard {
 
     public void setStudentCardNumber(Long studentCardNumber) {
         this.studentCardNumber = studentCardNumber;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
     }
 }
