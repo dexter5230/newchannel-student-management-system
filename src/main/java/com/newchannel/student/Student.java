@@ -34,6 +34,8 @@ public class Student {
     private StudentAccount studentAccount;
     @OneToMany (mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     List<Book> books = new ArrayList<>();
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    List<Enrolment> enrolments = new ArrayList<>();
 
     public Student() {
     }
@@ -123,6 +125,13 @@ public class Student {
     public void removeBook(Book book) {
         if (books.contains(book)) {
             books.remove(book);
+        }
+    }
+
+    public void addCourse(Enrolment enrolment) {
+        if (!enrolments.contains(enrolment)) {
+            enrolments.add(enrolment);
+            enrolment.setStudent(this);
         }
     }
 
