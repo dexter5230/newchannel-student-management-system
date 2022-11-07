@@ -5,7 +5,9 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "Student")
@@ -26,6 +28,14 @@ public class Student {
     @Column (name = "email", nullable = false, unique = true)
     @Email
     private String email;
+    @OneToOne (mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private StudentCard studentCard;
+    @OneToOne (mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private StudentAccount studentAccount;
+    @OneToMany (mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    List<Book> books = new ArrayList<>();
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    List<Enrolment> enrolments = new ArrayList<>();
 
     public Student() {
     }
@@ -93,6 +103,36 @@ public class Student {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void addStudentCard(StudentCard studentCard) {
+        this.studentCard = studentCard;
+        studentCard.setStudent(this);
+    }
+
+    public void addStudentAccount(StudentAccount studentAccount) {
+        this.studentAccount = studentAccount;
+        studentAccount.setStudent(this);
+    }
+
+    public void addBook(Book book) {
+        if (!books.contains(book)) {
+            books.add(book);
+            book.setStudent(this);
+        }
+    }
+
+    public void removeBook(Book book) {
+        if (books.contains(book)) {
+            books.remove(book);
+        }
+    }
+
+    public void addCourse(Enrolment enrolment) {
+        if (!enrolments.contains(enrolment)) {
+            enrolments.add(enrolment);
+            enrolment.setStudent(this);
+        }
     }
 
     @Override
