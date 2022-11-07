@@ -1,5 +1,6 @@
 package com.newchannel.student;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -11,11 +12,13 @@ import java.util.UUID;
 @Table(name = "course")
 public class Course {
     @Id
-    @Type(type = "uuid_char")
-    @Column(name = "book_id", updatable = false)
-    private UUID uuid = UUID.randomUUID();
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "UUID", strategy = "uuid4")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(name = "course_id", columnDefinition = "CHAR(36)")
+    private UUID courseId;
 
-    @Column(name = "book_name", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "course_name", nullable = false, columnDefinition = "TEXT")
     private String courseName;
 
     @Column(name = "department", nullable = false, columnDefinition = "TEXT")
@@ -25,21 +28,26 @@ public class Course {
     List<Enrolment> enrolments = new ArrayList<>();
 
     public Course(UUID uuid, String courseName, String department, List<Enrolment> enrolments) {
-        this.uuid = uuid;
+        this.courseId = uuid;
         this.courseName = courseName;
         this.department = department;
         this.enrolments = enrolments;
     }
 
+    public Course(String courseName, String department) {
+        this.courseName = courseName;
+        this.department = department;
+    }
+
     public Course() {
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public UUID getCourseId() {
+        return courseId;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setCourseId(UUID uuid) {
+        this.courseId = uuid;
     }
 
     public String getCourseName() {
@@ -82,7 +90,7 @@ public class Course {
     @Override
     public String toString() {
         return "Course{" +
-                "uuid=" + uuid +
+                "uuid=" + courseId +
                 ", courseName='" + courseName + '\'' +
                 ", department='" + department + '\'' +
                 ", enrolments=" + enrolments +

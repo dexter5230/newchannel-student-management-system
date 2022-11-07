@@ -8,6 +8,7 @@ public class StudentCard {
     @Id
     @SequenceGenerator (name = "student_card_generator", sequenceName = "student_card_generator", allocationSize = 1)
     @GeneratedValue (strategy = GenerationType.IDENTITY, generator = "student_card_generator")
+    @Column (name = "student_card_id")
     private Long studentCardId;
 
     @Column (name = "student_card_number", nullable = false, updatable = false)
