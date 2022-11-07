@@ -1,5 +1,6 @@
 package com.newchannel.student;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -14,9 +15,11 @@ import java.util.UUID;
 @Table(name = "student", uniqueConstraints = @UniqueConstraint(name = "unique_email_constrains", columnNames = "email"))
 public class Student {
     @Id
-    @Column (name = "student_id",updatable = false)
-    @Type(type = "uuid-char")
-    private UUID uuid = UUID.randomUUID();
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "UUID", strategy = "uuid4")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(name = "student_id", columnDefinition = "CHAR(36)")
+    private UUID studentId;
     @Column (name = "first_name",nullable = false, columnDefinition = "TEXT")
     private String firstName;
     @Column (name = "last_name", columnDefinition = "TEXT")
@@ -41,7 +44,7 @@ public class Student {
     }
 
     public Student(UUID uuid, String firstName, String lastName, Date date_of_birth, LocalDateTime createAt, String email) {
-        this.uuid = uuid;
+        this.studentId = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
         this.date_of_birth = date_of_birth;
@@ -57,12 +60,12 @@ public class Student {
         this.email = email;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public UUID getStudentId() {
+        return studentId;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setStudentId(UUID uuid) {
+        this.studentId = uuid;
     }
 
     public String getFirstName() {
@@ -131,14 +134,45 @@ public class Student {
     public void addCourse(Enrolment enrolment) {
         if (!enrolments.contains(enrolment)) {
             enrolments.add(enrolment);
-            enrolment.setStudent(this);
         }
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public StudentCard getStudentCard() {
+        return studentCard;
+    }
+
+    public void setStudentCard(StudentCard studentCard) {
+        this.studentCard = studentCard;
+    }
+
+    public StudentAccount getStudentAccount() {
+        return studentAccount;
+    }
+
+    public void setStudentAccount(StudentAccount studentAccount) {
+        this.studentAccount = studentAccount;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
+
+    public List<Enrolment> getEnrolments() {
+        return enrolments;
+    }
+
+    public void setEnrolments(List<Enrolment> enrolments) {
+        this.enrolments = enrolments;
     }
 
     @Override
     public String toString() {
         return "Student{" +
-                "uuid=" + uuid +
+                "uuid=" + studentId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", date_of_birth=" + date_of_birth +

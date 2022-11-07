@@ -1,37 +1,40 @@
 package com.newchannel.student;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @Embeddable
 public class EnrolmentId implements Serializable {
+    @Column(name = "student_id")
+    private UUID studentId;
+    @Column(name = "course_id")
+    private UUID courseId;
 
-    private Long StudentId;
-    private Long CourseId;
-
-    public EnrolmentId(Long studentId, Long courseId) {
-        StudentId = studentId;
-        CourseId = courseId;
+    public EnrolmentId(UUID studentId, UUID courseId) {
+        this.studentId = studentId;
+        this.courseId = courseId;
     }
 
     public EnrolmentId() {
     }
 
-    public Long getStudentId() {
-        return StudentId;
+    public UUID getStudentId() {
+        return studentId;
     }
 
-    public void setStudentId(Long studentId) {
-        StudentId = studentId;
+    public void setStudentId(UUID studentId) {
+       this.studentId = studentId;
     }
 
-    public Long getCourseId() {
-        return CourseId;
+    public UUID getCourseId() {
+        return courseId;
     }
 
-    public void setCourseId(Long courseId) {
-        CourseId = courseId;
+    public void setCourseId(UUID courseId) {
+        this.courseId = courseId;
     }
 
     @Override
@@ -39,11 +42,11 @@ public class EnrolmentId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EnrolmentId that = (EnrolmentId) o;
-        return Objects.equals(StudentId, that.StudentId) && Objects.equals(CourseId, that.CourseId);
+        return Objects.equals(studentId, that.studentId) && Objects.equals(courseId, that.courseId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(StudentId, CourseId);
+        return Objects.hash(studentId, courseId);
     }
 }

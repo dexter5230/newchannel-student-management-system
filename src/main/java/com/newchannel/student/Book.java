@@ -1,5 +1,6 @@
 package com.newchannel.student;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -10,9 +11,11 @@ import java.util.UUID;
 @Table(name = "book")
 public class Book {
     @Id
-    @Type(type = "uuid_char")
-    @Column(name = "book_id", updatable = false)
-    private UUID uuid = UUID.randomUUID();
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "UUID", strategy = "uuid4")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(name = "book_id", columnDefinition = "CHAR(36)")
+    private UUID bookId;
 
     @Column(name = "book_name", nullable = false, columnDefinition = "TEXT")
     private String bookName;
@@ -22,10 +25,10 @@ public class Book {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "student_id", referencedColumnName = "student_id", foreignKey = @ForeignKey(name = "student_id_fk"))
-    Student student;
+    private Student student;
 
     public Book(UUID uuid, String bookName, LocalDateTime createAt, Student student) {
-        this.uuid = uuid;
+        this.bookId = uuid;
         this.bookName = bookName;
         this.createAt = createAt;
         this.student = student;
@@ -36,12 +39,22 @@ public class Book {
         this.createAt = LocalDateTime.now();
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public Book(String bookName, LocalDateTime createAt, Student student) {
+        this.bookName = bookName;
+        this.createAt = createAt;
+        this.student = student;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public Book() {
+
+    }
+
+    public UUID getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(UUID uuid) {
+        this.bookId = uuid;
     }
 
     public String getBookName() {
@@ -68,10 +81,11 @@ public class Book {
         this.student = student;
     }
 
+
     @Override
     public String toString() {
         return "Book{" +
-                "uuid=" + uuid +
+                "uuid=" + bookId +
                 ", bookName='" + bookName + '\'' +
                 ", createAt=" + createAt +
                 ", student=" + student +
