@@ -6,6 +6,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(name = "Course")
@@ -85,6 +86,19 @@ public class Course {
             enrolments.add(e);
             e.setCourse(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return Objects.equals(courseId, course.courseId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(courseId);
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.newchannel.student;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(name = "Book")
@@ -23,7 +26,8 @@ public class Book {
     @Column(name = "create_at", nullable = false)
     private LocalDateTime createAt;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.DETACH}, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "student_id", referencedColumnName = "student_id", foreignKey = @ForeignKey(name = "student_id_fk"))
     private Student student;
 
@@ -81,6 +85,18 @@ public class Book {
         this.student = student;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return Objects.equals(bookId, book.bookId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bookId);
+    }
 
     @Override
     public String toString() {

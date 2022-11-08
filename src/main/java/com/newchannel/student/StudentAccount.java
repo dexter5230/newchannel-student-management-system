@@ -1,10 +1,13 @@
 package com.newchannel.student;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(name = "StudentAccount")
@@ -24,8 +27,9 @@ public class StudentAccount {
     @Column (name = "account_password", nullable = false, columnDefinition = "TEXT")
     private String password;
 
-    @OneToOne (cascade = CascadeType.ALL)
-    @JoinColumn (name = "student_id", referencedColumnName = "student_id")
+    @OneToOne
+    @JoinColumn (name = "student_id", referencedColumnName = "student_id", foreignKey = @ForeignKey(name = "student_id_fk"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Student student;
 
     public StudentAccount(UUID id, String accountName, String password) {
@@ -72,6 +76,19 @@ public class StudentAccount {
 
     public void setStudent(Student student) {
         this.student = student;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StudentAccount that = (StudentAccount) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
 
