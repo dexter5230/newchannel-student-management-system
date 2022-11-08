@@ -1,6 +1,11 @@
 package com.newchannel.student;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity(name = "StudentCard")
 @Table (name = "student_card")
@@ -14,8 +19,10 @@ public class StudentCard {
     @Column (name = "student_card_number", nullable = false, updatable = false)
     private Long studentCardNumber;
 
-    @OneToOne (cascade = CascadeType.ALL)
-    @JoinColumn (name = "student_id", referencedColumnName = "student_id")
+    @JsonIgnore
+    @OneToOne (cascade = {}, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn (name = "student_id", referencedColumnName = "student_id", foreignKey = @ForeignKey(name = "student_id_fk"))
     private Student student;
 
     public StudentCard(Long studentCardId, Long studentCardNumber) {
@@ -52,5 +59,18 @@ public class StudentCard {
 
     public void setStudent(Student student) {
         this.student = student;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StudentCard that = (StudentCard) o;
+        return Objects.equals(studentCardId, that.studentCardId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(studentCardId);
     }
 }

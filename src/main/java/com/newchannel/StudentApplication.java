@@ -1,6 +1,7 @@
-package com.newchannel.student;
+package com.newchannel;
 
 import com.github.javafaker.Faker;
+import com.newchannel.student.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +16,7 @@ public class StudentApplication {
 		SpringApplication.run(StudentApplication.class, args);
 	}
 	@Bean
-	CommandLineRunner commandLineRunner(StudentRepository studentRepository) {
+	CommandLineRunner commandLineRunner(StudentRepository studentRepository, StudentController studentController) {
 		return args -> {
 //            generateRandomStudents(studentRepository);
 //            //sorting(studentRepository);
@@ -40,8 +41,8 @@ public class StudentApplication {
 			);
 			student.addBook(new Book("I want to be a better person"));
 			student.addBook(new Book("I want to have a job"));
-			student.addStudentCard(new StudentCard(123456789L));
-			student.addStudentAccount(new StudentAccount(student.getEmail(),"qwer1234"));
+			//student.addStudentCard(new StudentCard(123456789L));
+			//student.addStudentAccount(new StudentAccount(student.getEmail(),"qwer1234"));
 			Course course1 =  new Course("Computer Science","IT");
 			Course course2 = new Course("Spring Date JPA","IT");
 			EnrolmentId en1 = new EnrolmentId(student.getStudentId(), course1.getCourseId());
@@ -55,7 +56,8 @@ public class StudentApplication {
 //            com.example.demo.student.enrolToCourse(new Course("Spring Date JPA", "IT"));
 			//StudentIdCard studentIdCard =  new StudentIdCard("123456789",com.example.demo.student);
 			// StudentAccount studentAccount = new StudentAccount("qwer1234",com.example.demo.student);
-			studentRepository.save(student);
+			studentController.addNewStudent(student);
+			//studentController.getAllStudent();
 //			studentRepository.findStudentByStudentId(student.getStudentId()).ifPresent(s-> {
 //				System.out.println("FetchType is lazy...");
 //				List<Book> books = student.getBooks();

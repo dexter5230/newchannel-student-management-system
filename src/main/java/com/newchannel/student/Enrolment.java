@@ -1,9 +1,11 @@
 package com.newchannel.student;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity(name = "Enrolment")
 @Table(name = "enrolment")
@@ -16,7 +18,7 @@ public class Enrolment {
     @MapsId ("courseId")
     @JoinColumn(name = "course_id", referencedColumnName = "course_id", foreignKey = @ForeignKey(name = "course_id_fk"))
     private Course course;
-
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("studentId")
@@ -60,6 +62,19 @@ public class Enrolment {
 
     public void setStudent(Student student) {
         this.student = student;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Enrolment enrolment = (Enrolment) o;
+        return Objects.equals(enrolmentId, enrolment.enrolmentId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(enrolmentId);
     }
 
     @Override

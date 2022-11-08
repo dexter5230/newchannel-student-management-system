@@ -1,15 +1,15 @@
 package com.newchannel.student;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity(name = "Student")
 @Table(name = "student", uniqueConstraints = @UniqueConstraint(name = "unique_email_constrains", columnNames = "email"))
@@ -21,24 +21,32 @@ public class Student {
     @Column(name = "student_id", columnDefinition = "CHAR(36)")
     private UUID studentId;
     @Column (name = "first_name",nullable = false, columnDefinition = "TEXT")
+    @NotBlank
     private String firstName;
-    @Column (name = "last_name", columnDefinition = "TEXT")
+    @Column (name = "last_name", nullable = false, columnDefinition = "TEXT")
+    @NotBlank
     private String lastName;
     @Column (name = "date_of_birth", nullable = false)
     private Date date_of_birth;
     @Column (name = "create_at", nullable = false, updatable = false)
     private LocalDateTime createAt;
     @Column (name = "email", nullable = false, unique = true)
+    @NotBlank
     @Email
     private String email;
     @OneToOne (mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private StudentCard studentCard;
-    @OneToOne (mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToOne (mappedBy = "student", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private StudentAccount studentAccount;
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @OneToMany (mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     List<Book> books = new ArrayList<>();
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     List<Enrolment> enrolments = new ArrayList<>();
+
 
     public Student() {
     }
@@ -108,16 +116,6 @@ public class Student {
         this.email = email;
     }
 
-    public void addStudentCard(StudentCard studentCard) {
-        this.studentCard = studentCard;
-        studentCard.setStudent(this);
-    }
-
-    public void addStudentAccount(StudentAccount studentAccount) {
-        this.studentAccount = studentAccount;
-        studentAccount.setStudent(this);
-    }
-
     public void addBook(Book book) {
         if (!books.contains(book)) {
             books.add(book);
@@ -128,6 +126,7 @@ public class Student {
     public void removeBook(Book book) {
         if (books.contains(book)) {
             books.remove(book);
+            book.setStudent(null);
         }
     }
 
@@ -146,6 +145,14 @@ public class Student {
     }
 
     public void setStudentCard(StudentCard studentCard) {
+        if (studentCard == null) {
+            if (this.studentCard != null) {
+                this.studentCard.setStudent(null);
+            }
+        }
+        else {
+            studentCard.setStudent(this);
+        }
         this.studentCard = studentCard;
     }
 
@@ -154,10 +161,29 @@ public class Student {
     }
 
     public void setStudentAccount(StudentAccount studentAccount) {
+        if (studentAccount == null) {
+            if (this.studentAccount != null) {
+                this.studentAccount.setStudent(null);
+            }
+        }
+        else {
+            studentAccount.setStudent(this);
+        }
         this.studentAccount = studentAccount;
     }
 
     public void setBooks(List<Book> books) {
+        if (books == null) {
+            if (this.books != null) {
+                for (Book book : this.books) {
+                    this.books.remove(book);
+                }
+            }
+        } else {
+            for (Book book : books) {
+                book.setStudent(this);
+            }
+        }
         this.books = books;
     }
 
@@ -167,6 +193,19 @@ public class Student {
 
     public void setEnrolments(List<Enrolment> enrolments) {
         this.enrolments = enrolments;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return Objects.equals(studentId, student.studentId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(studentId);
     }
 
     @Override
