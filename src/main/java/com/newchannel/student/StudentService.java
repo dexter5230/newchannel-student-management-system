@@ -1,6 +1,5 @@
 package com.newchannel.student;
 
-import com.newchannel.exception.NotFoundException;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +12,9 @@ import java.util.Random;
 @Service
 public class StudentService {
     private final StudentRepository studentRepository;
-    private final StudentCardRepository studentCardRepository;
-    private final BookRepository bookRepository;
 
-    public StudentService(StudentRepository studentRepository, StudentCardRepository studentCardRepository, BookRepository bookRepository) {
+    public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
-        this.studentCardRepository = studentCardRepository;
-        this.bookRepository = bookRepository;
     }
 
     public List<Student> getAllStudent() {
@@ -27,12 +22,7 @@ public class StudentService {
     }
 
     public Optional<Student> findStudentByStudentEmail(String email) {
-      Optional<Student> res =  studentRepository.findStudentByStudentEmail(email);
-      if (res.isPresent()){
-          return res;
-      } else {
-          throw new NotFoundException("Not found");
-      }
+      return  studentRepository.findStudentByStudentEmail(email);
     }
     @Transactional
     @Modifying

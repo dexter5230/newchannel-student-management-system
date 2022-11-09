@@ -1,5 +1,6 @@
 package com.newchannel.student;
 
+import com.newchannel.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +25,17 @@ public class StudentController {
 
 
     }
-    @GetMapping(path = "{email}")
+    @GetMapping(path = "findByEmail/{email}")
     public Optional<Student> findStudentByStudentEmail(@PathVariable("email") String email) {
-        return studentService.findStudentByStudentEmail(email);
+        if (studentService.findStudentByStudentEmail(email).isPresent()) {
+            return studentService.findStudentByStudentEmail(email);
+        } else {
+            throw new NotFoundException("shit");
+
+        }
+
     }
+
     @PostMapping(path = "student" )
     public ResponseEntity<Student> addNewStudent(@Valid @RequestBody Student student) {
         if (student == null) {
