@@ -1,16 +1,19 @@
 package com.newchannel.student;
 
+import com.newchannel.exception.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
 public class StudentService {
+    private final static Logger LOGGER = LoggerFactory.getLogger(StudentService.class);
     private final StudentRepository studentRepository;
 
     public StudentService(StudentRepository studentRepository) {
@@ -18,11 +21,17 @@ public class StudentService {
     }
 
     public List<Student> getAllStudent() {
+        LOGGER.info("getAllStudent() was called");
         return studentRepository.getAllStudent();
     }
 
-    public Optional<Student> findStudentByStudentEmail(String email) {
-      return  studentRepository.findStudentByStudentEmail(email);
+    public Student findStudentByStudentEmail(String email) {
+      return  studentRepository.findStudentByStudentEmail(email).orElseThrow(()->{
+          NotFoundException e = new NotFoundException("student with email " + email + " was not found");
+
+          LOGGER.error("error in getting customer {}", email, e);
+          return e;
+      });
     }
     @Transactional
     @Modifying
