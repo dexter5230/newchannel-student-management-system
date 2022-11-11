@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/student/v1")
@@ -24,10 +23,11 @@ public class StudentController {
 
 
     }
-    @GetMapping(path = "{email}")
-    public Optional<Student> findStudentByStudentEmail(@PathVariable("email") String email) {
+    @GetMapping(path = "findByEmail/{email}")
+    public Student findStudentByStudentEmail(@PathVariable("email") String email) {
         return studentService.findStudentByStudentEmail(email);
     }
+
     @PostMapping(path = "student" )
     public ResponseEntity<Student> addNewStudent(@Valid @RequestBody Student student) {
         if (student == null) {
@@ -40,7 +40,7 @@ public class StudentController {
 
     @DeleteMapping(path = "delete/{email}")
     public ResponseEntity<String> deleteStudent(@PathVariable("email") String email) {
-        if (studentService.findStudentByStudentEmail(email).isPresent()){
+        if (studentService.findStudentByStudentEmail(email) != null){
             studentService.removeStudent(email);
             return new ResponseEntity<>(email, HttpStatus.ACCEPTED);
         } else {
@@ -55,7 +55,7 @@ public class StudentController {
                                                 @RequestParam(name = "email", required = false) String updatedEmail,
                                                 @RequestParam(name = "date_of_birth", required = false) Date date) {
 
-        if (studentService.findStudentByStudentEmail(email).isPresent()) {
+        if (studentService.findStudentByStudentEmail(email) != null) {
             studentService.updateStudent(email, firstName, lastName, updatedEmail, date);
         }
         return new ResponseEntity<>(email, HttpStatus.ACCEPTED);
